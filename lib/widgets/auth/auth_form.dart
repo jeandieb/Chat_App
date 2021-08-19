@@ -3,6 +3,11 @@ import 'package:flutter/material.dart';
 enum AUTH_MODE { LOGIN, SIGNUP }
 
 class AuthForm extends StatefulWidget {
+
+  final Function _submitForm;
+
+  AuthForm(this._submitForm);
+
   @override
   _AuthFormState createState() => _AuthFormState();
 }
@@ -33,7 +38,8 @@ class _AuthFormState extends State<AuthForm> {
     if (isValid) {
       //this reached it will trigger the onSaved property in each TextFormField
       _formKey.currentState.save();
-      //...
+      //get rid of invalid spaces at the begining and end of credentials
+      widget._submitForm(_emailAddress.trim(), _password.trim(), _username.trim(), authMode, context);
     }
   }
 
