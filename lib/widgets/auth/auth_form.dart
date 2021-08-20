@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import '../pickers/user_image_picker.dart';
 
 enum AUTH_MODE { LOGIN, SIGNUP }
 
@@ -19,6 +21,11 @@ class _AuthFormState extends State<AuthForm> {
   String _emailAddress = '';
   String _username = '';
   String _password = '';
+  File _userImageFile;
+
+  void _pickedImage(File image) {
+    _userImageFile = image;
+  }
 
   final _passwordController = TextEditingController();
 
@@ -34,6 +41,14 @@ class _AuthFormState extends State<AuthForm> {
     final isValid = _formKey.currentState.validate();
     //close the soft keyboard when the form is valid and being submitted
     FocusScope.of(context).unfocus();
+    //no image was picked
+    if (_userImageFile == null && authMode == AUTH_MODE.SIGNUP) {
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text('Please pick an image, '),
+        backgroundColor: Theme.of(context).errorColor,
+      ));
+      return;
+    }
     if (isValid) {
       //this reached it will trigger the onSaved property in each TextFormField
       _formKey.currentState.save();
@@ -57,6 +72,8 @@ class _AuthFormState extends State<AuthForm> {
                   mainAxisSize: MainAxisSize
                       .min, //make columns take as much space as needed
                   children: [
+                    //image
+                    if (authMode == AUTH_MODE.SIGNUP) UserImagePicker(_pickedImage),
                     //email
                     TextFormField(
                       key: ValueKey('email'),
@@ -121,7 +138,8 @@ class _AuthFormState extends State<AuthForm> {
                         onPressed: _trySubmit,
                       ),
                     if (!widget._isLoading)
-                      FlatButton(textColor: Theme.of(context).primaryColor,
+                      FlatButton(
+                          textColor: Theme.of(context).primaryColor,
                           child: Text(authMode == AUTH_MODE.LOGIN
                               ? 'Create new account'
                               : 'I already have an account'),
