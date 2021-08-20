@@ -3,10 +3,9 @@ import 'package:flutter/material.dart';
 enum AUTH_MODE { LOGIN, SIGNUP }
 
 class AuthForm extends StatefulWidget {
-
   final Function _submitForm;
-
-  AuthForm(this._submitForm);
+  final bool _isLoading;
+  AuthForm(this._submitForm, this._isLoading);
 
   @override
   _AuthFormState createState() => _AuthFormState();
@@ -39,7 +38,8 @@ class _AuthFormState extends State<AuthForm> {
       //this reached it will trigger the onSaved property in each TextFormField
       _formKey.currentState.save();
       //get rid of invalid spaces at the begining and end of credentials
-      widget._submitForm(_emailAddress.trim(), _password.trim(), _username.trim(), authMode, context);
+      widget._submitForm(_emailAddress.trim(), _password.trim(),
+          _username.trim(), authMode, context);
     }
   }
 
@@ -100,7 +100,8 @@ class _AuthFormState extends State<AuthForm> {
                       TextFormField(
                         key: ValueKey('confPassword'),
                         validator: (value) {
-                          if(value.isEmpty || value != _passwordController.text)
+                          if (value.isEmpty ||
+                              value != _passwordController.text)
                             return 'password does not match';
                           return null;
                         },
@@ -109,16 +110,22 @@ class _AuthFormState extends State<AuthForm> {
                             InputDecoration(labelText: 'Confirm Password'),
                       ),
                     SizedBox(height: 15),
-                    RaisedButton(
-                      child: Text(
-                          authMode == AUTH_MODE.LOGIN ? 'Log In' : 'Sign Up'),
-                      onPressed: _trySubmit,
-                    ),
-                    FlatButton(
-                        child: Text(authMode == AUTH_MODE.LOGIN
-                            ? 'Create new account'
-                            : 'I already have an account'),
-                        onPressed: changeAuthMode)
+                    if (widget._isLoading)
+                      Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    if (!widget._isLoading)
+                      RaisedButton(
+                        child: Text(
+                            authMode == AUTH_MODE.LOGIN ? 'Log In' : 'Sign Up'),
+                        onPressed: _trySubmit,
+                      ),
+                    if (!widget._isLoading)
+                      FlatButton(textColor: Theme.of(context).primaryColor,
+                          child: Text(authMode == AUTH_MODE.LOGIN
+                              ? 'Create new account'
+                              : 'I already have an account'),
+                          onPressed: changeAuthMode)
                   ]),
             ),
           ),
