@@ -4,17 +4,19 @@ import 'package:flutter/material.dart';
 class MessageBubble extends StatelessWidget {
   final String message;
   final String username;
+  final String userImage;
   final bool isMe;
   //using a key will make sure that Flutter can efficiently and correctly re-render the messages list
   final Key key;
 
-  MessageBubble(this.message, this.username, this.isMe, {this.key});
+  MessageBubble(this.message, this.username, this.userImage, this.isMe, {this.key});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
+        CircleAvatar(backgroundImage: NetworkImage(userImage),),
         Container(
           decoration: BoxDecoration(
             color: !isMe

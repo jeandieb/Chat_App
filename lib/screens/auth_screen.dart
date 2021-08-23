@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 import '../widgets/auth/auth_form.dart';
 
@@ -15,7 +17,7 @@ class _AuthScreenState extends State<AuthScreen> {
   bool _isLoading = false;
 
   void _submitAuthForm(String email, String password, String username,
-      AUTH_MODE authMode, BuildContext ctx) async {
+      File image, AUTH_MODE authMode, BuildContext ctx) async {
     AuthResult authResult;
     try {
       setState(() {
@@ -27,6 +29,14 @@ class _AuthScreenState extends State<AuthScreen> {
       } else {
         authResult = await _auth.createUserWithEmailAndPassword(
             email: email, password: password);
+
+        final ref = FirebaseStorage.instance.ref().child('user_images').child(
+            authResult.user.uid +
+                '.jpg'); //usually images taken by device cam are .jpg
+        //we use on complelete because it returns a Future and hence we can await it
+        await ref.putFile(image).onComplete;
+        final url = await ref.getDownloadURL();
+
         //add username to the user that got created
         await Firestore.instance
             .collection('users')
@@ -34,6 +44,7 @@ class _AuthScreenState extends State<AuthScreen> {
             .setData({
           'username': username,
           'email': email,
+          'image_url': url,
         });
       }
 

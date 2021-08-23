@@ -18,7 +18,7 @@ class _UserImagePickerState extends State<UserImagePicker> {
 
   void _pickImage()async{
     //need to be updated after migrating flutter and firebase... 
-    final pickedImageFile = await ImagePicker.pickImage(source: ImageSource.camera);
+    final pickedImageFile = await ImagePicker.pickImage(source: ImageSource.camera, imageQuality: 50, maxWidth: 150,);
     setState(() {
       _pickedImage = pickedImageFile;
     });

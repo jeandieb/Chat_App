@@ -54,7 +54,7 @@ class _AuthFormState extends State<AuthForm> {
       _formKey.currentState.save();
       //get rid of invalid spaces at the begining and end of credentials
       widget._submitForm(_emailAddress.trim(), _password.trim(),
-          _username.trim(), authMode, context);
+          _username.trim(), _userImageFile, authMode, context);
     }
   }
 
